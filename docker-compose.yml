@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+
+    nginx:
+        build:
+            ./docker-container/nginx
+        links:
+            - php
+
+    php:
+        build: ./docker-container/php
+        volumes:
+            - .:/var/www
+        environment:
+            PHP_IDE_CONFIG: "serverName=Docker"
+
+    postgres:
+        image: postgres:12-alpine
+        environment:
+            POSTGRES_USER: oreo
+            POSTGRES_PASSWORD: oreo
+            POSTGRES_DB: oreo
+
+    elasticsearch:
+        image: elasticsearch:7.10.1
+        environment:
+            - discovery.type=single-node
+
+    kibana:
+        image: kibana:7.10.1
+        links:
+            - elasticsearch
+
+    clickhouse:
+        image: yandex/clickhouse-server:21.2.2.8-alpine
+        ulimits:
+            nofile: 262144
+
+    rabbitmq:
+        image: rabbitmq:3.8.12-management
+        volumes:
+            - ./docker/rabbitmq:/var/lib/rabbitmq
+        hostname: rabbitmq
+
+
