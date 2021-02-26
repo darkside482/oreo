@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+
+    nginx:
+        container_name: nginx
+        ports:
+            - "80:80"
+        volumes:
+            - .:/var/www
+
+    php:
+        container_name: php
+        build: ./docker-container/php
+        volumes:
+            - .:/var/www
+
+    postgres:
+        container_name: postgres
+        volumes:
+            - /docker/postgres/data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: oreo
+            POSTGRES_PASSWORD: oreo
+            POSTGRES_DB: oreo
+
+    elasticsearch:
+        container_name: elastic
+        ports:
+            - "9200:9200"
+            - "9300:9300"
+        environment:
+            - discovery.type=single-node
+
+    kibana:
+        container_name: kibana
+        ports:
+            - "5601:5601"
+        links:
+            - elasticsearch
+
+    clickhouse:
+        container_name: clickhouse
+        ports:
+            - "8123:8123"
+
+    rabbitmq:
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+            - "25672:25672"
+
+
+
